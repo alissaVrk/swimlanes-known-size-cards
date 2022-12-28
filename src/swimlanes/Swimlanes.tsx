@@ -56,8 +56,8 @@ export function Swimlanes(props: {
 
   return (
     <>
-      <div ref={headersParent} style={{ height: HEADER_HEIGHT, overflow: 'scroll' }}>
-        <div style={{ height: '100%', width: `${columnsVirtualizer.getTotalSize() + LANE_HEADER_WIDTH}px`, position: 'relative' }}>
+      <div ref={headersParent} style={{ height: HEADER_HEIGHT, overflow: 'scroll', marginLeft: LANE_HEADER_WIDTH }}>
+        <div style={{ height: '100%', width: `${columnsVirtualizer.getTotalSize()}px`, position: 'relative' }}>
           {columnsVirtualizer.getVirtualItems().map((virtual) => {
             return (
               <div
@@ -65,7 +65,7 @@ export function Swimlanes(props: {
                 className="virtual-item-horizontal"
                 style={{
                   width: `${virtual.size}px`,
-                  transform: `translateX(${virtual.start + LANE_HEADER_WIDTH}px)`,
+                  transform: `translateX(${virtual.start}px)`,
                   border: "solid blue",
                   height: '100%',
                 }}
