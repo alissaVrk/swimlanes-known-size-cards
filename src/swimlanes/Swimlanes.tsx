@@ -1,7 +1,7 @@
 import { LanesDataType, LETTERS } from "../data";
 import { Lane } from "./Lane";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { COLUMN_WIDTH, getLaneHeight, HEADER_HEIGHT, LANE_HEADER_WIDTH } from "./sizeHelpers";
 
 export function Swimlanes(props: {
@@ -9,7 +9,28 @@ export function Swimlanes(props: {
   cardsHeights: { [key: number]: number };
 }) {
   const lanesParent = useRef<HTMLDivElement>(null);
-  const columnsParent = useRef<HTMLDivElement>(null);
+  // const columnsParent = useRef<HTMLDivElement>(null);
+  const headersParent = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const lanes = lanesParent.current;
+    if (!lanes) {
+      return;
+    }
+
+
+    const handleScroll = () => {
+      if (headersParent.current) {
+        headersParent.current.scrollTo(lanes.scrollLeft, 0);
+      }
+    };
+
+    lanes.addEventListener('scroll', handleScroll);
+
+    return () => {
+      lanes.removeEventListener('scroll', handleScroll);
+    }
+  }, [])
 
   const getLaneByIndex = (index: number) => {
     return props.data[index];
@@ -27,16 +48,16 @@ export function Swimlanes(props: {
 
 
   const columnsVirtualizer = useVirtualizer({
-    getScrollElement: () => columnsParent.current,
+    getScrollElement: () => lanesParent.current,
     count: LETTERS.length,
     estimateSize: (index) => COLUMN_WIDTH,
     horizontal: true,
   });
 
   return (
-    <div ref={columnsParent} style={{ height: '500px', width: '700px', overflowX: "scroll" }}>
-      <div className="virtual-container-horizontal" style={{ width: `${columnsVirtualizer.getTotalSize() + LANE_HEADER_WIDTH}px` }}>
-        <div style={{ height: 50 }}>
+    <>
+      <div ref={headersParent} style={{ height: HEADER_HEIGHT, overflow: 'scroll' }}>
+        <div style={{ height: '100%', width: `${columnsVirtualizer.getTotalSize() + LANE_HEADER_WIDTH}px`, position: 'relative' }}>
           {columnsVirtualizer.getVirtualItems().map((virtual) => {
             return (
               <div
@@ -46,7 +67,7 @@ export function Swimlanes(props: {
                   width: `${virtual.size}px`,
                   transform: `translateX(${virtual.start + LANE_HEADER_WIDTH}px)`,
                   border: "solid blue",
-                  height: HEADER_HEIGHT,
+                  height: '100%',
                 }}
               >
                 {LETTERS[virtual.index]}
@@ -54,34 +75,35 @@ export function Swimlanes(props: {
             );
           })}
         </div>
-        <div ref={lanesParent} style={{ height: '450px', width: '100%', overflowY: 'scroll' }}>
-          <div
-            className="virtual-container-vertical"
-            style={{ height: lanesVirtualizer.getTotalSize() }}
-          >
-            {lanesVirtualizer.getVirtualItems().map((virtual) => {
-              const lane = getLaneByIndex(virtual.index);
-              return (
-                <Lane
-                  key={virtual.index}
-                  start={virtual.start}
-                  data={lane}
-                  cardsHeights={props.cardsHeights}
-                  scrollingRef={lanesParent}
-                  columnsVirtualizer={columnsVirtualizer}
-                  className="virtual-item-vertical"
-                  style={{
-                    height: virtual.size,
-                    // transform: `translateY(${virtual.start}px)`
-                    top: `${virtual.start}px`
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
-
       </div>
-    </div>
+
+      <div ref={lanesParent} style={{ height: '500px', overflow: "scroll" }}>
+
+        <div
+          style={{ height: lanesVirtualizer.getTotalSize(), width: `${columnsVirtualizer.getTotalSize() + LANE_HEADER_WIDTH}px`, position: 'relative' }}
+        >
+          {lanesVirtualizer.getVirtualItems().map((virtual) => {
+            const lane = getLaneByIndex(virtual.index);
+            return (
+              <Lane
+                key={virtual.index}
+                start={virtual.start}
+                data={lane}
+                cardsHeights={props.cardsHeights}
+                scrollingRef={lanesParent}
+                columnsVirtualizer={columnsVirtualizer}
+                className="virtual-item-vertical"
+                style={{
+                  height: virtual.size,
+                  // transform: `translateY(${virtual.start}px)`
+                  top: `${virtual.start}px`
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </>
+
   );
 }
