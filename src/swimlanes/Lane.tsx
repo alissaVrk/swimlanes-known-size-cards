@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { map } from "lodash";
-import { Person } from "../data";
+import { LaneType } from "../data";
 import { Column } from "./Column";
 import { LANE_HEADER_WIDTH } from "./sizeHelpers";
+import { Virtualizer } from "@tanstack/react-virtual";
 
 export function Lane(
   props: React.HtmlHTMLAttributes<HTMLDivElement> & {
-    data: { [key: string]: Person[] };
+    data: LaneType;
     cardsHeights: { [key: number]: number };
-    laneName: string;
     scrollingRef: React.RefObject<HTMLDivElement>;
+    columnsVirtualizer: Virtualizer<HTMLDivElement, Element>;
     start: number;
   }
 ) {
-  useEffect;
 
   return (
     <div
@@ -31,31 +31,38 @@ export function Lane(
       }}></div>
 
       <div style={{
-        display: "flex",
-        flexDirection: "row",
-        background: 'pink',
+        position: 'sticky',
+        top: '0px',
+        left: '0px',
         height: '100%',
+        background: 'pink',
+        width: `${LANE_HEADER_WIDTH}px`,
+        zIndex: 1,
       }}>
         <div style={{
           position: 'sticky',
           top: '0px',
           left: '0px',
           height: 'fit-content',
+          width: `${LANE_HEADER_WIDTH}px`,
         }}>
-          FFFGDFGDFGDGDFG
+          {props.data.name}
         </div>
-        {map(props.data, (column, name) => {
-          return (
-            <Column
-              key={name}
-              data={column}
-              cardsHeights={props.cardsHeights}
-              scrollingRef={props.scrollingRef}
-              start={props.start}
-            />
-          );
-        })}
       </div>
+
+      {map(props.columnsVirtualizer.getVirtualItems(), (virtual) => {
+        const column = props.data.data[virtual.index].data;
+        return (
+          <Column
+            key={virtual.index}
+            data={column}
+            cardsHeights={props.cardsHeights}
+            scrollingRef={props.scrollingRef}
+            start={props.start}
+            left={virtual.start + LANE_HEADER_WIDTH}
+          />
+        );
+      })}
     </div>
   );
 }

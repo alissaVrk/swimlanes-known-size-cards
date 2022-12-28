@@ -1,22 +1,22 @@
 import { LanesDataType, LETTERS } from "../data";
 import { Lane } from "./Lane";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useMemo, useRef } from "react";
-import { COLUMN_WIDTH, getLaneHeight } from "./sizeHelpers";
+import { useRef } from "react";
+import { COLUMN_WIDTH, getLaneHeight, LANE_HEADER_WIDTH } from "./sizeHelpers";
 
 export function Swimlanes(props: {
   data: LanesDataType;
   cardsHeights: { [key: number]: number };
 }) {
   const lanesParent = useRef<HTMLDivElement>(null);
-  const keys = useMemo(() => Object.keys(props.data), [props.data]);
+  
   const getLaneByIndex = (index: number) => {
-    return props.data[keys[index]];
+    return props.data[index];
   };
 
   const lanesVirtualizer = useVirtualizer({
     getScrollElement: () => lanesParent.current,
-    count: keys.length,
+    count: props.data.length,
     estimateSize: (index) => {
       const lane = getLaneByIndex(index);
       return getLaneHeight(lane, props.cardsHeights) || 0;
@@ -33,10 +33,10 @@ export function Swimlanes(props: {
   });
 
   return (
-      <div ref={lanesParent} style={{ height: '500px', overflow: "scroll" }}>
+      <div ref={lanesParent} style={{ height: '500px', width: '100%', overflow: "scroll" }}>
         <div
           className="virtual-container-vertical"
-          style={{ height: lanesVirtualizer.getTotalSize(), width: `${200 * 30}px` }}
+          style={{ height: lanesVirtualizer.getTotalSize(), width: `${columnsVirtualizer.getTotalSize() + LANE_HEADER_WIDTH}px` }}
         >
           {lanesVirtualizer.getVirtualItems().map((virtual) => {
             const lane = getLaneByIndex(virtual.index);
@@ -44,10 +44,10 @@ export function Swimlanes(props: {
               <Lane
                 key={virtual.index}
                 start={virtual.start}
-                laneName={keys[virtual.index]}
                 data={lane}
                 cardsHeights={props.cardsHeights}
                 scrollingRef={lanesParent}
+                columnsVirtualizer={columnsVirtualizer}
                 className="virtual-item-vertical"
                 style={{
                   height: virtual.size,

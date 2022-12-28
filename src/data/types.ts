@@ -26,7 +26,7 @@ export type KeyOfByProp<T, PropType, ExcludePropType = undefined> = Exclude<
 
 export type LanesWithHeight = ReturnType<typeof makeLaneToColumnsToPersonData>;
 export type LanesDataType = LanesWithHeight["data"];
-export type Lane = LanesDataType[""];
+export type LaneType = LanesDataType[number];
 
 export const letters = [
   "A",
