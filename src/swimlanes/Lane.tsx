@@ -20,30 +20,42 @@ export function Lane(
       className={props.className}
       style={{
         ...props.style,
+      }}
+    >
+      <div style={{
+        height: '2px',
+        background: 'pink',
+        position: 'sticky',
+        top: '0px',
+        zIndex: 1,
+      }}></div>
+
+      <div style={{
         display: "flex",
         flexDirection: "row",
         background: 'pink',
-      }}
-    >
-      <div style={{height: '2px'}}></div>
-      <div style={{
-        position: 'sticky',
-        top: '0px',
-        height: 'fit-content',
+        height: '100%',
       }}>
-        FFFGDFGDFGDGDFG
+        <div style={{
+          position: 'sticky',
+          top: '0px',
+          left: '0px',
+          height: 'fit-content',
+        }}>
+          FFFGDFGDFGDGDFG
+        </div>
+        {map(props.data, (column, name) => {
+          return (
+            <Column
+              key={name}
+              data={column}
+              cardsHeights={props.cardsHeights}
+              scrollingRef={props.scrollingRef}
+              start={props.start}
+            />
+          );
+        })}
       </div>
-      {map(props.data, (column, name) => {
-        return (
-          <Column
-            key={name}
-            data={column}
-            cardsHeights={props.cardsHeights}
-            scrollingRef={props.scrollingRef}
-            start={props.start}
-          />
-        );
-      })}
     </div>
   );
 }
