@@ -2,14 +2,13 @@ import { LanesDataType, LETTERS } from "../data";
 import { Lane } from "./Lane";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useRef } from "react";
-import { COLUMN_WIDTH, getLaneHeight, HEADER_HEIGHT, LANE_HEADER_WIDTH } from "./sizeHelpers";
+import { COLUMN_WIDTH, getLaneHeight, HEADER_HEIGHT, LANE_HEADER_WIDTH, LANE_PADDING } from "./sizeHelpers";
 
 export function Swimlanes(props: {
   data: LanesDataType;
   cardsHeights: { [key: number]: number };
 }) {
   const lanesParent = useRef<HTMLDivElement>(null);
-  // const columnsParent = useRef<HTMLDivElement>(null);
   const headersParent = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export function Swimlanes(props: {
     count: props.data.length,
     estimateSize: (index) => {
       const lane = getLaneByIndex(index);
-      return getLaneHeight(lane, props.cardsHeights) || 0;
+      return (getLaneHeight(lane, props.cardsHeights) || 0) + LANE_PADDING;
     },
     overscan: 1,
   });
@@ -50,13 +49,13 @@ export function Swimlanes(props: {
   const columnsVirtualizer = useVirtualizer({
     getScrollElement: () => lanesParent.current,
     count: LETTERS.length,
-    estimateSize: (index) => COLUMN_WIDTH,
+    estimateSize: () => COLUMN_WIDTH,
     horizontal: true,
   });
 
   return (
     <>
-      <div ref={headersParent} style={{ height: HEADER_HEIGHT, overflow: 'scroll', marginLeft: LANE_HEADER_WIDTH }}>
+      <div ref={headersParent} style={{ height: HEADER_HEIGHT, overflow: 'hidden', marginLeft: LANE_HEADER_WIDTH }}>
         <div style={{ height: '100%', width: `${columnsVirtualizer.getTotalSize()}px`, position: 'relative' }}>
           {columnsVirtualizer.getVirtualItems().map((virtual) => {
             return (
@@ -95,7 +94,6 @@ export function Swimlanes(props: {
                 className="virtual-item-vertical"
                 style={{
                   height: virtual.size,
-                  // transform: `translateY(${virtual.start}px)`
                   top: `${virtual.start}px`
                 }}
               />

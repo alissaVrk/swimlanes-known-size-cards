@@ -1,5 +1,6 @@
 import { useVirtualizer, elementScroll } from "@tanstack/react-virtual";
 import { Person } from "../data";
+import { Card } from "./Card";
 import { COLUMN_WIDTH } from "./sizeHelpers";
 
 export function Column(props: {
@@ -21,7 +22,7 @@ export function Column(props: {
       }
     }
   });
-  
+
 
   return (
     <div
@@ -34,20 +35,7 @@ export function Column(props: {
     >
       {columnVirtualizer.getVirtualItems().map((virtual) => {
         const item = props.data![virtual.index];
-        return (
-          <div
-            key={item.id}
-            className="virtual-item-vertical"
-            style={{
-              height: `${virtual.size}px`,
-              transform: `translateY(${virtual.start - props.start}px)`,
-              boxSizing: "border-box",
-              border: "solid green"
-            }}
-          >
-            {item.firstName} {item.lastName}
-          </div>
-        );
+        return (<Card key={item.id} item={item} size={virtual.size} top={virtual.start - props.start} />)
       })}
     </div>
   );
