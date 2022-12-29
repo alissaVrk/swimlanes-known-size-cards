@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useMemo } from "react";
-import { makeLaneToColumnsToPersonData, LanesDataType } from "../data";
+import { makeLaneToColumnsToPersonData, LanesDataType, Person } from "../data";
 import { getColumnSize, getLaneHeight } from "./sizeHelpers";
 
 export type ContextType = {
@@ -7,10 +7,11 @@ export type ContextType = {
     originalItemHeights: { [key: number]: number };
     laneHeights: number[];
     setOverrideColumnHeight: (columnId: string, height: number) => void;
+    resetColumnHeight: (columnId: string, columnData: Person[]) => void;
 };
 export const DataCotext = React.createContext<ContextType>({} as ContextType);
 
-function calcColumnHeights(data: LanesDataType, heights: { [key: number]: number }) {
+function calcColumnsHeights(data: LanesDataType, heights: { [key: number]: number }) {
     const columnHeights: { [key: string]: number } = {};
 
     data.forEach((lane) => {
@@ -23,7 +24,7 @@ function calcColumnHeights(data: LanesDataType, heights: { [key: number]: number
 
 export function DataProvider(props: PropsWithChildren<any>) {
     const { data, height } = useMemo(() => makeLaneToColumnsToPersonData(), []);
-    const [actualColumnHeights, setActualColumnHeights] = React.useState(calcColumnHeights(data, height));
+    const [actualColumnHeights, setActualColumnHeights] = React.useState(calcColumnsHeights(data, height));
     const laneHeights = useMemo(() => data.map(lane => getLaneHeight(lane, actualColumnHeights)), [actualColumnHeights]);
 
     const value = useMemo(
@@ -32,7 +33,14 @@ export function DataProvider(props: PropsWithChildren<any>) {
             originalItemHeights: height,
             laneHeights,
             setOverrideColumnHeight: (columnId: string, height: number) => {
-                setActualColumnHeights((prev) => ({ ...prev, [columnId]: height }));
+                setActualColumnHeights((prev) => prev[columnId] === height ? prev : { ...prev, [columnId]: height });
+            },
+            resetColumnHeight: (columnId: string, columnData: Person[]) => {
+                const columnHeight = getColumnSize(columnData, height);
+                if (columnHeight === actualColumnHeights[columnId]) {
+                    return;
+                }
+                setActualColumnHeights(prev => ({ ...prev, [columnId]: columnHeight }));
             },
         }),
         [data, height, setActualColumnHeights, laneHeights]

@@ -4,12 +4,11 @@ import { LaneType } from "../data";
 import { Column } from "./Column";
 import { LANE_HEADER_WIDTH } from "./sizeHelpers";
 import { Virtualizer } from "@tanstack/react-virtual";
-import { useDataContext } from "./DataContext";
 
 export function Lane(
   props: React.HtmlHTMLAttributes<HTMLDivElement> & {
     data: LaneType;
-    scrollingRef: React.RefObject<HTMLDivElement>;
+    scrollingRef: HTMLDivElement | null;
     columnsVirtualizer: Virtualizer<HTMLDivElement, Element>;
     start: number;
   }
