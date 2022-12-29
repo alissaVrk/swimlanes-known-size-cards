@@ -24,7 +24,7 @@ export function Column(props: {
     overscan: 2,
     //this is fixing a bug in the library
     scrollToFn: (offset, options, instance) => {
-      if (offset !== 0 || props.start === 0) {
+      if (offset !== 0) {
         elementScroll(offset, options, instance);
       }
     },
