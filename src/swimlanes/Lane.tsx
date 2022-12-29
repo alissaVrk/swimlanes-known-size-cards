@@ -4,11 +4,11 @@ import { LaneType } from "../data";
 import { Column } from "./Column";
 import { LANE_HEADER_WIDTH } from "./sizeHelpers";
 import { Virtualizer } from "@tanstack/react-virtual";
+import { useDataContext } from "./DataContext";
 
 export function Lane(
   props: React.HtmlHTMLAttributes<HTMLDivElement> & {
     data: LaneType;
-    cardsHeights: { [key: number]: number };
     scrollingRef: React.RefObject<HTMLDivElement>;
     columnsVirtualizer: Virtualizer<HTMLDivElement, Element>;
     start: number;
@@ -51,12 +51,11 @@ export function Lane(
       </div>
 
       {map(props.columnsVirtualizer.getVirtualItems(), (virtual) => {
-        const column = props.data.data[virtual.index].data;
+        const column = props.data.data[virtual.index];
         return (
           <Column
             key={virtual.index}
             data={column}
-            cardsHeights={props.cardsHeights}
             scrollingRef={props.scrollingRef}
             start={props.start}
             left={virtual.start + LANE_HEADER_WIDTH}

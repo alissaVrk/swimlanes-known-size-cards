@@ -1,15 +1,15 @@
-import { LanesDataType, LETTERS } from "../data";
+import { LETTERS } from "../data";
 import { Lane } from "./Lane";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useRef } from "react";
 import { COLUMN_WIDTH, getLaneHeight, HEADER_HEIGHT, LANE_HEADER_WIDTH, LANE_PADDING } from "./sizeHelpers";
+import { useDataContext } from "./DataContext";
 
 export function Swimlanes(props: {
-  data: LanesDataType;
-  cardsHeights: { [key: number]: number };
 }) {
   const lanesParent = useRef<HTMLDivElement>(null);
   const headersParent = useRef<HTMLDivElement>(null);
+  const dataContext = useDataContext();
 
   useEffect(() => {
     const lanes = lanesParent.current;
@@ -32,18 +32,22 @@ export function Swimlanes(props: {
   }, [])
 
   const getLaneByIndex = (index: number) => {
-    return props.data[index];
+    return dataContext.data[index];
   };
 
   const lanesVirtualizer = useVirtualizer({
     getScrollElement: () => lanesParent.current,
-    count: props.data.length,
+    count: dataContext.data.length,
     estimateSize: (index) => {
-      const lane = getLaneByIndex(index);
-      return (getLaneHeight(lane, props.cardsHeights) || 0) + LANE_PADDING;
+      return dataContext.laneHeights[index] + LANE_PADDING;
     },
     overscan: 1,
   });
+
+  useEffect(() => {
+    console.log('global measure');
+    lanesVirtualizer.measure();
+  }, [dataContext.laneHeights]);
 
 
   const columnsVirtualizer = useVirtualizer({
@@ -88,7 +92,6 @@ export function Swimlanes(props: {
                 key={virtual.index}
                 start={virtual.start}
                 data={lane}
-                cardsHeights={props.cardsHeights}
                 scrollingRef={lanesParent}
                 columnsVirtualizer={columnsVirtualizer}
                 className="virtual-item-vertical"

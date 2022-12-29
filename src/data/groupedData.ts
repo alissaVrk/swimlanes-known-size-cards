@@ -8,7 +8,8 @@ function getFirstLetter(name: string) {
 
 function GroupByFirstLetterAndSort(
   data: Person[],
-  field: KeyOfByProp<Person, string>
+  field: KeyOfByProp<Person, string>,
+  prefix: string = ""
 ) {
   let grouped = groupBy(data, (person) => getFirstLetter(person[field]));
   const withNames = map(LETTERS, (firstLetter) => {
@@ -16,22 +17,24 @@ function GroupByFirstLetterAndSort(
     return {
       name: firstLetter,
       data: lane,
+      id: prefix + firstLetter,
     };
   });
   return orderBy(withNames, (lane) => lane.name);
 }
 
 function generateHeights(data: Person[]) {
-  const dataMap = keyBy(data, "id");
+  const dataMap = keyBy(data, "id") as { [key: number]: Person };
   return mapValues(dataMap, (person) => random(30, 100));
 }
 
 export function makeLaneToColumnsToPersonData() {
   const rawData = makeData(1000);
   let byLanes = GroupByFirstLetterAndSort(rawData, "lastName");
-  const lanesData = map(byLanes, ({ data, name }) => ({
-    data: GroupByFirstLetterAndSort(data, "firstName"),
+  const lanesData = map(byLanes, ({ data, name, id }) => ({
+    data: GroupByFirstLetterAndSort(data, "firstName", `${id}-`),
     name,
+    id: id,
   }));
 
   return {
