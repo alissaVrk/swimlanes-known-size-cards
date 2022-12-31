@@ -1,9 +1,9 @@
-import { useVirtualizer, elementScroll } from "@tanstack/react-virtual";
 import { useEffect, useRef } from "react";
 import { ColumnsType } from "../data";
 import { Card } from "./Card";
 import { useDataContext } from "./DataContext";
 import { COLUMN_WIDTH } from "./sizeHelpers";
+import { useVirtualizerWithOffset } from "./useVirtualizerWithOffset";
 
 export function Column(props: {
   data?: ColumnsType;
@@ -15,19 +15,15 @@ export function Column(props: {
   const mounted = useRef<boolean>(false);
   const itemsData = props.data?.data;
 
-  const columnVirtualizer = useVirtualizer({
-    getScrollElement: () => props.scrollingRef,
-    count: props.data?.data?.length || 0,
-    estimateSize: (index) =>
-      itemsData ? dataContext.originalItemHeights[itemsData[index].id] : 0,
-    paddingStart: props.start,
-    overscan: 2,
-    //this is fixing a bug in the library
-    scrollToFn: (offset, options, instance) => {
-      if (offset !== 0) {
-        elementScroll(offset, options, instance);
-      }
-    },
+  const columnVirtualizer = useVirtualizerWithOffset({
+    startOffset: props.start,
+    options: {
+      getScrollElement: () => props.scrollingRef,
+      count: props.data?.data?.length || 0,
+      estimateSize: (index) =>
+        itemsData ? dataContext.originalItemHeights[itemsData[index].id] : 0,
+      overscan: 2,
+    }
   });
 
   useEffect(() => {
@@ -36,13 +32,12 @@ export function Column(props: {
     }
 
     if (mounted.current) {
-      console.log("columnVirtualizer.getTotalSize()", props.data.id, columnVirtualizer.getTotalSize());
-      dataContext.setOverrideColumnHeight(props.data!.id, columnVirtualizer.getTotalSize() - props.start);
+      dataContext.setOverrideColumnHeight(props.data!.id, columnVirtualizer.getFixedTotalSize());
     }
     return () => {
       dataContext.resetColumnHeight(props.data!.id, props.data!.data);
     }
-  }, [columnVirtualizer.getTotalSize()]);
+  }, [columnVirtualizer.getFixedTotalSize()]);
 
   useEffect(() => {
     mounted.current = true;
@@ -60,7 +55,7 @@ export function Column(props: {
         background: "white",
       }}
     >
-      {columnVirtualizer.getVirtualItems().map((virtual) => {
+      {columnVirtualizer.getFixedVirtualItems().map((virtual) => {
         const item = itemsData![virtual.index];
         return (
           <Card
@@ -68,7 +63,7 @@ export function Column(props: {
             index={virtual.index}
             item={item}
             size={dataContext.originalItemHeights[item.id]}
-            top={virtual.start - props.start}
+            top={virtual.start}
             measureElement={columnVirtualizer.measureElement}
           />
         );
