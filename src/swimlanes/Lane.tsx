@@ -49,15 +49,15 @@ export function Lane(
         </div>
       </div>
 
-      {map(props.columnsVirtualizer.getVirtualItems(), (virtual) => {
-        const column = props.data.data[virtual.index];
+      {map(props.columnsVirtualizer.getVirtualItems(), (virtualColumn) => {
+        const column = props.data.data[virtualColumn.index];
         return (
           <Column
-            key={virtual.index}
+            key={virtualColumn.index}
             data={column}
             scrollingRef={props.scrollingRef}
             start={props.start}
-            left={virtual.start + LANE_HEADER_WIDTH}
+            left={virtualColumn.start}
           />
         );
       })}

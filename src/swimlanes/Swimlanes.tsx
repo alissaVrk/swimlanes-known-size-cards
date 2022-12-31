@@ -57,6 +57,8 @@ export function Swimlanes() {
     count: LETTERS.length,
     estimateSize: () => COLUMN_WIDTH,
     horizontal: true,
+    paddingStart: LANE_HEADER_WIDTH,
+    overscan: 0,
   });
 
   return (
@@ -66,9 +68,9 @@ export function Swimlanes() {
         style={{
           height: HEADER_HEIGHT,
           overflow: "hidden",
-          marginLeft: LANE_HEADER_WIDTH,
         }}
       >
+        <div style={{ position: 'absolute', background: 'white', zIndex: 1, height: '100%', width: LANE_HEADER_WIDTH }} />
         <div
           style={{
             height: "100%",
@@ -99,7 +101,7 @@ export function Swimlanes() {
         <div
           style={{
             height: lanesVirtualizer.getTotalSize(),
-            width: `${columnsVirtualizer.getTotalSize() + LANE_HEADER_WIDTH}px`,
+            width: `${columnsVirtualizer.getTotalSize()}px`,
             position: "relative",
           }}
         >
