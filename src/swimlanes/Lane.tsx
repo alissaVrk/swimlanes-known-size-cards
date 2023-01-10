@@ -56,7 +56,7 @@ export function Lane(
             key={virtualColumn.index}
             data={column}
             scrollingRef={props.scrollingRef}
-            start={props.start}
+            top={props.start}
             left={virtualColumn.start}
           />
         );

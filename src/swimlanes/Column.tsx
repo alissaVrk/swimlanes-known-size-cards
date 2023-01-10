@@ -8,15 +8,15 @@ import { useVirtualizerWithOffset } from "./useVirtualizerWithOffset";
 export function Column(props: {
   data?: ColumnsType;
   scrollingRef: HTMLDivElement | null;
-  start: number;
+  top: number;
   left: number;
 }) {
   const dataContext = useDataContext();
   const mounted = useRef<boolean>(false);
   const itemsData = props.data?.data;
 
-  const columnVirtualizer = useVirtualizerWithOffset({
-    startOffset: props.start,
+  const cardsVirtualizer = useVirtualizerWithOffset({
+    startOffset: props.top,
     options: {
       getScrollElement: () => props.scrollingRef,
       count: props.data?.data?.length || 0,
@@ -32,12 +32,12 @@ export function Column(props: {
     }
 
     if (mounted.current) {
-      dataContext.setOverrideColumnHeight(props.data!.id, columnVirtualizer.getFixedTotalSize());
+      dataContext.setOverrideColumnHeight(props.data!.id, cardsVirtualizer.getFixedTotalSize());
     }
     return () => {
       dataContext.resetColumnHeight(props.data!.id, props.data!.data);
     }
-  }, [columnVirtualizer.getFixedTotalSize()]);
+  }, [cardsVirtualizer.getFixedTotalSize()]);
 
   useEffect(() => {
     mounted.current = true;
@@ -55,7 +55,7 @@ export function Column(props: {
         background: "white",
       }}
     >
-      {columnVirtualizer.getFixedVirtualItems().map((virtual) => {
+      {cardsVirtualizer.getFixedVirtualItems().map((virtual) => {
         const item = itemsData![virtual.index];
         return (
           <Card
@@ -64,7 +64,7 @@ export function Column(props: {
             item={item}
             size={dataContext.originalItemHeights[item.id]}
             top={virtual.start}
-            measureElement={columnVirtualizer.measureElement}
+            measureElement={cardsVirtualizer.measureElement}
           />
         );
       })}
