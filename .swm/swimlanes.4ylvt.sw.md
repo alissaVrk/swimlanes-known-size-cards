@@ -1,23 +1,20 @@
 ---
 id: 4ylvt
-title: Component or Service Overview
+title: Swimlanes
 file_version: 1.1.1
 app_version: 1.0.20
 ---
 
 ## Introduction
 
-This doc gives a high-level overview of Swimlanes. It is located under `📄 src/swimlanes` Main features
+the main file is `📄 src/swimlanes/Swimlanes.tsx`<br/>
+the relevant directory is `📄 src/swimlanes`
 
 The main features of Swimlanes are:
 
 ## Interface
 
 {{How can this component/service be accessed?}}
-
-<br/>
-
-
 
 <br/>
 
