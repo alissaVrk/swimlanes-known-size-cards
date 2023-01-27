@@ -1,11 +1,17 @@
 ---
 id: 4ylvt
-title: Swimlanes
+title: "Swimlanes "
 file_version: 1.1.1
 app_version: 1.0.20
 ---
 
 ## Introduction
+
+this is the component - `Swimlanes`<swm-token data-swm-token=":src/swimlanes/Swimlanes.tsx:13:4:4:`export function Swimlanes() {`"/> but it doesn't add it, which is very annoying!!
+
+let try this `Swimlanes`<swm-token data-swm-token=":src/swimlanes/Swimlanes.tsx:13:4:4:`export function Swimlanes() {`"/>
+
+snippet works, but I don't want a snippet
 
 the main file is `📄 src/swimlanes/Swimlanes.tsx`<br/>
 the relevant directory is `📄 src/swimlanes`
@@ -15,8 +21,6 @@ The main features of Swimlanes are:
 ## Interface
 
 {{How can this component/service be accessed?}}
-
-<br/>
 
 ## Directory structure
 
