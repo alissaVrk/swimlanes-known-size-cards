@@ -13,6 +13,29 @@ let try this `Swimlanes`<swm-token data-swm-token=":src/swimlanes/Swimlanes.tsx:
 
 snippet works, but I don't want a snippet
 
+<br/>
+
+<br/>
+
+
+<!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
+### 📄 src/swimlanes/useVirtualizerWithOffset.ts
+```typescript
+25       const columnVirtualizer = useVirtualizer({
+26         ...options,
+27         paddingStart: startOffset,
+28         //this is fixing a bug in the library
+29         scrollToFn: (offset, options, instance) => {
+30           if (offset !== 0) {
+31             elementScroll(offset, options, instance);
+32           }
+33         },
+34       }) as VirtualizerWithOffset<Element, Element>;
+35     
+```
+
+<br/>
+
 the main file is `📄 src/swimlanes/Swimlanes.tsx`<br/>
 the relevant directory is `📄 src/swimlanes`
 
